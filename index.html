@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إِلَافَ Store</title>
+    <meta name="description" content="إِلَافَ Store - Elegant Fashion">
+    <link rel="icon" href="https://z-cdn-media.chatglm.cn/files/cda74804-a859-495b-976f-774d7b646be9.png?auth_key=1883551166-aadfba8bfec34231ac90420ce44886f5-0-812fe79686f0c6c548509fef34029787" type="image/png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700;800&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap');
+        *{box-sizing:border-box;margin:0;padding:0}
+        html{scroll-behavior:smooth}
+        body{font-family:'Tajawal',sans-serif;background:#F5F1EB;color:#111;overflow-x:hidden}
+        a{text-decoration:none;color:inherit}
+        .loader-screen{position:fixed;top:0;left:0;width:100%;height:100%;background:#F5F1EB;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s,visibility .6s}
+        .loader-screen.hide{opacity:0;visibility:hidden;pointer-events:none}
+        .loader-logo{max-width:180px;width:80%;animation:pulse 1.5s ease-in-out infinite}
+        .loader-bar{width:120px;height:2px;background:#E8E0D5;margin-top:30px;border-radius:2px;overflow:hidden}
+        .loader-bar-inner{width:0;height:100%;background:#3E2723;border-radius:2px;animation:fill 1.2s ease forwards}
+        @keyframes pulse{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.05);opacity:1}}
+        @keyframes fill{to{width:100%}}
+        .announcement-bar{background:#3E2723;color:#fff;text-align:center;padding:10px 40px;font-size:13px;font-weight:500;position:relative;overflow:hidden}
+        .announcement-bar span{opacity:.95;display:inline-block;white-space:nowrap;animation:slide 20s linear infinite}
+        @keyframes slide{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
+        .announcement-bar.hidden-bar{display:none}
+        .close-announce{position:absolute;top:50%;transform:translateY(-50%);left:12px;background:0 0;border:0;color:#fff;cursor:pointer;font-size:18px;opacity:.7;padding:0 8px}
+        [dir="rtl"] .close-announce{left:auto;right:12px}
+        .close-announce:hover{opacity:1}
+
+        /* ===== NAVBAR ===== */
+        .navbar{background:#F5F1EB;padding:14px 30px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:500;box-shadow:0 2px 15px rgba(0,0,0,.03);gap:15px;transition:box-shadow .3s}
+        .navbar.scrolled{box-shadow:0 4px 20px rgba(62,39,35,.08)}
+        .nav-section-left{display:flex;align-items:center;gap:16px}
+        .nav-section-center{display:flex;align-items:center;gap:20px;flex:1;justify-content:center}
+        .nav-section-right{display:flex;align-items:center;gap:16px}
+        .nav-links{display:flex;gap:25px;font-weight:700;font-size:15px}
+        .nav-links a{position:relative;padding-bottom:4px;transition:color .3s}
+        .nav-links a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:#3E2723;transition:width .3s}
+        [dir="rtl"] .nav-links a::after{left:auto;right:0}
+        .nav-links a:hover::after{width:100%}
+        .nav-links a:hover{color:#5D4037}
+        .search-box{position:relative}
+        .search-box input{width:220px;padding:10px 20px 10px 40px;border:1px solid #E8E0D5;border-radius:50px;font-family:'Tajawal';font-size:14px;outline:0;background:#EDE8E0;transition:all .3s}
+        [dir="rtl"] .search-box input{padding:10px 40px 10px 20px}
+        .search-box input:focus{border-color:#3E2723;background:#fff;width:280px}
+        .search-icon{position:absolute;top:50%;transform:translateY(-50%);left:14px;font-size:15px;opacity:.5;pointer-events:none}
+        [dir="rtl"] .search-icon{left:auto;right:14px}
+        .nav-icons{display:flex;align-items:center;gap:14px}
+        .cart-icon,.wishlist-icon{position:relative;cursor:pointer;font-size:22px;transition:transform .3s}
+        .cart-icon:hover,.wishlist-icon:hover{transform:scale(1.15)}
+        .cart-count,.wishlist-count{position:absolute;top:-8px;left:-8px;border-radius:50%;width:20px;height:20px;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:700;transition:transform .3s}
+        [dir="rtl"] .cart-count,[dir="rtl"] .wishlist-count{left:auto;right:-8px}
+        .cart-count{background:#3E2723;color:#fff}
+        .wishlist-count{background:#C62828;color:#fff}
+        .cart-count.bump{animation:bump .3s ease}
+        @keyframes bump{0%{transform:scale(1)}50%{transform:scale(1.4)}100%{transform:scale(1)}}
+        .nav-logo-img{height:40px;width:auto;cursor:pointer;transition:opacity .3s;filter:drop-shadow(0 2px 4px rgba(62,39,35,.15))}
+        .nav-logo-img:hover{opacity:.7}
+        .lang-btn{background:#3E2723;color:#fff;border:0;padding:9px 16px;border-radius:20px;font-family:'Tajawal';font-weight:700;font-size:13px;cursor:pointer;transition:all .3s;white-space:nowrap}
+        .lang-btn:hover{background:#5D4037;transform:translateY(-1px)}
+        .mobile-menu-btn{display:none;background:0 0;border:0;font-size:26px;cursor:pointer;color:#3E2723;line-height:1;padding:4px}
+        .mobile-search-toggle{display:none;background:0 0;border:0;font-size:20px;cursor:pointer;color:#3E2723;padding:4px;line-height:1}
+        .mobile-search-bar{display:none;width:100%;padding:0 0 12px;order:10}
+        .mobile-search-bar.open{display:block}
+        .mobile-search-bar input{width:100%;padding:12px 20px 12px 42px;border:1px solid #E8E0D5;border-radius:50px;font-family:'Tajawal';font-size:15px;outline:0;background:#EDE8E0;transition:all .3s}
+        [dir="rtl"] .mobile-search-bar input{padding:12px 42px 12px 20px}
+        .mobile-search-bar input:focus{border-color:#3E2723;background:#fff}
+        .mobile-search-bar .search-icon{left:14px}
+        [dir="rtl"] .mobile-search-bar .search-icon{left:auto;right:14px}
+
+        .coming-soon-wrap{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center;padding:80px 20px}
+        .coming-soon-logo{max-width:300px;width:100%;margin-bottom:60px;filter:drop-shadow(0 8px 20px rgba(0,0,0,.06))}
+        .coming-soon-line{width:60px;height:2px;background:#3E2723;margin-bottom:40px}
+        .coming-soon-h{font-family:'Playfair Display',serif;font-size:clamp(50px,10vw,120px);font-weight:900;color:#3E2723;letter-spacing:12px;text-transform:uppercase;line-height:1;margin-bottom:25px}
+        .coming-soon-sub{font-family:'Playfair Display',serif;font-size:clamp(16px,2.5vw,22px);color:#999;font-style:italic;letter-spacing:3px;margin-bottom:50px}
+        .coming-soon-deco{display:flex;align-items:center;gap:15px;color:#ccc;font-size:24px}
+        .coming-soon-deco span{width:40px;height:1px;background:#ccc;display:block}
+        .shop-hero-logo{text-align:center;padding:50px 20px 15px;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transform:translateY(60px)}
+        .shop-hero-logo.animate-hero{animation:fadeIn 1s cubic-bezier(.25,.8,.25,1) .2s forwards}
+        .shop-hero-logo img{max-width:300px;width:100%;height:auto;filter:drop-shadow(0 10px 25px rgba(62,39,35,.12));transform:scale(.8);opacity:0}
+        .shop-hero-logo.animate-hero img{animation:imgPop .8s cubic-bezier(.25,.8,.25,1) .5s forwards}
+        .shop-hero-line{width:0;height:2px;background:#3E2723;margin:20px auto 0}
+        .shop-hero-logo.animate-hero .shop-hero-line{animation:lineGrow .6s ease 1s forwards}
+        @keyframes fadeIn{to{opacity:1;transform:translateY(0)}}
+        @keyframes imgPop{to{transform:scale(1);opacity:1}}
+        @keyframes lineGrow{to{width:80px}}
+        .filter-bar{max-width:1200px;margin:10px auto 0;padding:0 30px;display:none;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+        .products-count{font-size:14px;color:#888;font-weight:500}
+        .filter-bar select{padding:10px 20px;border:1px solid #E8E0D5;border-radius:25px;font-family:'Tajawal';font-size:14px;font-weight:600;background:#EDE8E0;color:#3E2723;outline:0;cursor:pointer;transition:all .3s;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%233E2723' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:calc(100% - 14px) center;padding-inline-end:36px}
+        [dir="rtl"] .filter-bar select{background-position:calc(0% + 14px) center}
+        .filter-bar select:focus{border-color:#3E2723;background-color:#fff}
+        .empty-state{text-align:center;padding:80px 20px;max-width:500px;margin:0 auto}
+        .empty-state-icon{font-size:80px;margin-bottom:20px;opacity:.3}
+        .empty-state h2{font-size:24px;font-weight:800;color:#3E2723;margin-bottom:10px}
+        .empty-state p{font-size:15px;color:#888;line-height:1.7}
+        .products-grid{max-width:1200px;margin:15px auto 40px;padding:0 30px;display:none;grid-template-columns:repeat(auto-fill,minmax(260px,280px));justify-content:center;gap:24px}
+        .product-card{background:#3E2723;cursor:pointer;overflow:hidden;transition:all .4s cubic-bezier(.25,.8,.25,1);border:0;opacity:0;transform:translateY(50px);position:relative;border-radius:20px;width:100%}
+        .product-card.animate{animation:slideUp .6s ease forwards}
+        @keyframes slideUp{to{opacity:1;transform:translateY(0)}}
+        .product-card:hover{transform:translateY(-10px);box-shadow:0 25px 50px rgba(62,39,35,.25)}
+        .product-img-wrap{overflow:hidden;position:relative;background:#5D4037;height:380px;border-radius:20px 20px 0 0}
+        .card-slider{position:relative;height:100%;width:100%}
+        .card-slide{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;transition:opacity .5s;pointer-events:none}
+        .card-slide.active-slide{opacity:1;pointer-events:auto}
+        .card-slide img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+        .product-card:hover .card-slide.active-slide img{transform:scale(1.06)}
+        .card-dots{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:10;background:rgba(62,39,35,.7);padding:6px 14px;border-radius:20px;opacity:0;transition:opacity .3s;backdrop-filter:blur(4px)}
+        .product-card:hover .card-dots{opacity:1}
+        .card-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;border:0;transition:all .3s}
+        .card-dot.active{background:#fff;transform:scale(1.3);box-shadow:0 0 6px rgba(255,255,255,.5)}
+        .discount-badge{position:absolute;top:18px;left:18px;background:#C62828;color:#fff;padding:6px 14px;font-size:12px;font-weight:800;border-radius:8px;z-index:2}
+        [dir="rtl"] .discount-badge{left:auto;right:18px}
+        .stock-badge{position:absolute;top:18px;right:18px;padding:6px 14px;font-size:11px;font-weight:800;border-radius:20px;z-index:2}
+        [dir="rtl"] .stock-badge{right:auto;left:18px}
+        .stock-in{background:rgba(46,125,50,.9);color:#fff}
+        .stock-out{background:rgba(198,40,40,.9);color:#fff}
+        .card-bottom-actions{position:absolute;bottom:18px;left:18px;right:18px;display:flex;gap:10px;z-index:10;opacity:0;transform:translateY(10px);transition:all .3s}
+        .product-card:hover .card-bottom-actions{opacity:1;transform:translateY(0)}
+        .quick-add-btn{flex:1;background:rgba(255,255,255,.95);color:#3E2723;border:0;padding:12px 16px;font-family:'Tajawal';font-weight:800;font-size:13px;cursor:pointer;border-radius:12px;transition:all .3s;box-shadow:0 4px 15px rgba(0,0,0,.2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .quick-add-btn:hover{background:#fff;transform:scale(1.03)!important}
+        .wishlist-btn-card{width:44px;min-width:44px;height:44px;background:rgba(255,255,255,.95);border:0;border-radius:12px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .3s;box-shadow:0 4px 15px rgba(0,0,0,.2);color:#3E2723}
+        .wishlist-btn-card:hover{background:#fff;transform:scale(1.1)!important}
+        .wishlist-btn-card.active{color:#C62828}
+        .product-details{padding:20px 18px 22px;text-align:center}
+        .product-name{font-size:16px;font-weight:700;margin-bottom:10px;color:#FAF8F5;letter-spacing:.3px}
+        .price-box{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;width:100%}
+        .current-price{font-size:19px;font-weight:800;color:#FAF8F5}
+        .old-price{font-size:14px;color:rgba(255,255,255,.4);text-decoration:line-through}
+        .shipping-note{font-size:12px;color:rgba(255,255,255,.45);width:100%;margin-top:6px}
+        #product-page{display:none;padding-top:30px;min-height:100vh}
+        .back-link{display:inline-flex;align-items:center;gap:8px;margin-bottom:30px;font-weight:700;color:#3E2723;border-bottom:2px solid #3E2723;padding-bottom:2px;cursor:pointer;font-size:16px;transition:gap .3s}
+        .back-link:hover{gap:12px}
+        .pp-container{max-width:1200px;margin:0 auto;padding:0 30px;display:flex;gap:50px}
+        .pp-images{flex:1;position:relative;max-width:550px}
+        .pp-slider{position:relative;width:100%;height:550px;background:#EDE8E0;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.05)}
+        .pp-slide{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;transition:opacity .6s}
+        .pp-slide.active{opacity:1}
+        .pp-slide img{width:100%;height:100%;object-fit:cover}
+        .pp-slider-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.85);border:0;width:42px;height:42px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;z-index:5;transition:all .3s;backdrop-filter:blur(4px);box-shadow:0 2px 8px rgba(0,0,0,.1)}
+        .pp-slider-nav:hover{background:#fff;box-shadow:0 4px 15px rgba(0,0,0,.15)}
+        .pp-prev{left:15px}.pp-next{right:15px}
+        [dir="rtl"] .pp-prev{left:auto;right:15px}
+        [dir="rtl"] .pp-next{right:auto;left:15px}
+        .slider-dots{display:flex;justify-content:center;gap:10px;margin-top:20px}
+        .slider-dot{width:12px;height:12px;border-radius:50%;background:#E8E0D5;cursor:pointer;border:0;transition:all .3s}
+        .slider-dot.active{background:#3E2723;transform:scale(1.2)}
+        .pp-stock-badge{display:inline-block;padding:8px 20px;border-radius:25px;font-weight:800;font-size:14px;margin-bottom:15px}
+        .pp-info{flex:1;padding-top:10px}
+        .pp-title{font-size:26px;font-weight:800;margin-bottom:15px;color:#3E2723}
+        .pp-price-box{margin-bottom:5px;display:flex;align-items:center;gap:15px}
+        .pp-current-price{font-size:28px;font-weight:800;color:#3E2723}
+        .pp-old-price{font-size:17px;color:#999;text-decoration:line-through}
+        .pp-shipping{font-size:14px;color:#888;margin-bottom:25px}
+        .option-label{font-weight:700;margin-bottom:12px;font-size:15px;display:block}
+        .color-options{display:flex;gap:15px;margin-bottom:25px}
+        .c-btn{width:38px;height:38px;border-radius:50%;border:2px solid #FAF8F5;box-shadow:0 2px 5px rgba(0,0,0,.1);cursor:pointer;transition:all .3s}
+        .c-btn:hover{transform:scale(1.15)}
+        .c-btn.active{border-color:#3E2723;transform:scale(1.2);box-shadow:0 0 0 3px rgba(62,39,35,.2)}
+        .size-options{display:flex;gap:10px;margin-bottom:35px;flex-wrap:wrap}
+        .s-btn{padding:14px 22px;border:2px solid #E8E0D5;background:0 0;font-family:'Tajawal';font-size:16px;font-weight:700;cursor:pointer;border-radius:8px;color:#3E2723;transition:all .3s}
+        .s-btn:hover{border-color:#3E2723}
+        .s-btn.active{background:#3E2723;color:#fff;border-color:#3E2723}
+        .action-buttons{display:flex;flex-direction:column;gap:15px;margin-bottom:30px}
+        .btn-atc,.btn-buy{width:100%;padding:18px;font-family:'Tajawal';font-size:18px;font-weight:800;cursor:pointer;border-radius:12px;border:2px solid #3E2723;transition:all .3s;overflow:hidden}
+        .btn-atc{background:0 0;color:#3E2723}
+        .btn-atc:hover{background:#EDE8E0;transform:translateY(-2px)}
+        .btn-buy{background:#3E2723;color:#fff}
+        .btn-buy:hover{background:#5D4037;border-color:#5D4037;transform:translateY(-2px)}
+        .btn-atc.disabled,.btn-buy.disabled{opacity:.4;cursor:not-allowed;pointer-events:none;transform:none!important}
+        .btn-spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-inline-end:8px}
+        .btn-atc .btn-spinner{border-color:rgba(62,39,35,.2);border-top-color:#3E2723}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .size-chart-toggle{font-size:14px;text-decoration:underline;cursor:pointer;color:#5D4037;margin-bottom:15px;display:inline-block;transition:color .3s}
+        .size-chart-toggle:hover{color:#3E2723}
+        .size-chart-box{background:#EDE8E0;padding:20px;border-radius:12px;margin-bottom:30px;display:none;font-size:14px;line-height:1.8}
+        .recommended{max-width:1200px;margin:60px auto 0;padding:0 30px 40px}
+        .rec-title{font-size:22px;font-weight:800;margin-bottom:25px;border-bottom:2px solid #3E2723;padding-bottom:10px;display:inline-block;color:#3E2723}
+        .rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,220px));justify-content:center;gap:20px}
+        .rec-card{cursor:pointer;transition:transform .3s}
+        .rec-card:hover{transform:translateY(-3px)}
+        .rec-card img{width:100%;height:220px;object-fit:cover;border-radius:12px;margin-bottom:10px;background:#EDE8E0;transition:box-shadow .3s}
+        .rec-card:hover img{box-shadow:0 8px 20px rgba(0,0,0,.08)}
+        .rec-name{font-weight:700;font-size:14px;color:#3E2723}
+        .rec-price{font-weight:800;color:#3E2723}
+        .sidebar{position:fixed;top:0;width:420px;height:100%;background:#FAF8F5;box-shadow:10px 0 40px rgba(62,39,35,.12);transition:transform .4s cubic-bezier(.25,.8,.25,1);z-index:2000;display:flex;flex-direction:column;right:0;transform:translateX(100%)}
+        [dir="rtl"] .sidebar{right:auto;left:0;transform:translateX(-100%);box-shadow:-10px 0 40px rgba(62,39,35,.12)}
+        .sidebar.open{transform:translateX(0)!important}
+        .sidebar-header{padding:25px;border-bottom:1px solid #E8E0D5;display:flex;justify-content:space-between;align-items:center;font-size:20px;font-weight:800;color:#3E2723}
+        .close-btn{background:0 0;border:0;font-size:32px;cursor:pointer;color:#3E2723;transition:transform .3s;line-height:1}
+        .close-btn:hover{transform:rotate(90deg)}
+        .cart-items{flex:1;overflow-y:auto;padding:20px}
+        .cart-items::-webkit-scrollbar{width:4px}
+        .cart-items::-webkit-scrollbar-thumb{background:#E8E0D5;border-radius:4px}
+        .cart-item{display:flex;gap:15px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid #E8E0D5;align-items:center;position:relative;transition:opacity .3s,transform .3s}
+        .cart-item.removing-item{opacity:0;transform:translateX(30px);height:0;margin:0;padding:0;overflow:hidden}
+        .cart-item img{width:70px;height:90px;object-fit:cover;border-radius:12px;background:#EDE8E0}
+        .cart-item-details{flex:1}
+        .cart-item-details h4{font-size:15px;margin-bottom:5px;color:#3E2723}
+        .cart-item-meta{font-size:12px;color:#777;margin-bottom:8px;display:flex;gap:10px;align-items:center}
+        .cart-item-price{font-size:14px;font-weight:800;color:#3E2723;margin-bottom:6px}
+        .qty-controls{display:flex;align-items:center;gap:12px}
+        .qty-btn{width:32px;height:32px;border-radius:50%;border:1px solid #E8E0D5;background:0 0;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Tajawal';font-weight:700;color:#3E2723;transition:all .2s}
+        .qty-btn:hover{background:#3E2723;color:#fff;border-color:#3E2723}
+        .qty-val{font-weight:800;font-size:16px;min-width:20px;text-align:center}
+        .remove-btn{color:#e74c3c;cursor:pointer;background:0 0;border:0;font-size:13px;font-family:'Tajawal';font-weight:700;text-decoration:underline;position:absolute;top:0;left:0;transition:opacity .3s}
+        [dir="rtl"] .remove-btn{left:auto;right:0}
+        .remove-btn:hover{opacity:.6}
+        .sidebar-footer{padding:25px;border-top:1px solid #E8E0D5}
+        .cart-total-details{margin-bottom:15px;font-size:14px;color:#555}
+        .cart-total-row{display:flex;justify-content:space-between;margin-bottom:8px}
+        .cart-total-final{font-size:20px;font-weight:800;color:#3E2723;border-top:2px solid #E8E0D5;padding-top:10px;margin-top:10px;display:flex;justify-content:space-between}
+        .checkout-btn{width:100%;padding:18px;background:#3E2723;color:#fff;border:0;font-family:'Tajawal';font-size:17px;font-weight:700;cursor:pointer;border-radius:12px;transition:all .3s;display:flex;align-items:center;justify-content:center;gap:8px}
+        .checkout-btn:hover{background:#5D4037;transform:translateY(-2px)}
+        .checkout-btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+        .modal-base{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:#FAF8F5;padding:30px;border-radius:16px;z-index:3000;width:90%;max-width:500px;display:none;box-shadow:0 20px 60px rgba(0,0,0,.2);max-height:90vh;overflow-y:auto;opacity:0;transition:all .3s cubic-bezier(.25,.8,.25,1)}
+        .modal-base.show{display:block;opacity:1;transform:translate(-50%,-50%) scale(1)}
+        .modal-base::-webkit-scrollbar{width:4px}
+        .modal-base::-webkit-scrollbar-thumb{background:#E8E0D5;border-radius:4px}
+        .form-group{margin-bottom:20px}
+        .form-group label{display:block;margin-bottom:8px;font-weight:700;font-size:14px;color:#3E2723}
+        .form-group input,.form-group textarea{width:100%;padding:16px;border:1px solid #E8E0D5;border-radius:12px;font-family:'Tajawal';font-size:16px;outline:0;background:#F5F1EB;resize:vertical;transition:all .3s}
+        .form-group input:focus,.form-group textarea:focus{border-color:#3E2723;background:#fff;box-shadow:0 0 0 3px rgba(62,39,35,.1)}
+        .form-group .field-error{color:#C62828;font-size:12px;margin-top:5px;display:none}
+        .form-group.has-error input,.form-group.has-error textarea{border-color:#C62828}
+        .form-group.has-error .field-error{display:block}
+        .pay-options{display:flex;gap:15px;margin-bottom:10px;flex-wrap:wrap}
+        .pay-option{flex:1;min-width:120px;cursor:pointer}
+        .pay-option input{display:none}
+        .pay-box{padding:15px;border:2px solid #E8E0D5;border-radius:12px;text-align:center;font-weight:700;color:#3E2723;font-size:14px;transition:all .3s}
+        .pay-option input:checked+.pay-box{border-color:#3E2723;background:#3E2723;color:#fff}
+        .toast-msg{position:fixed;top:20px;right:20px;color:#fff;padding:15px 25px;border-radius:12px;z-index:5000;display:none;font-weight:700;font-size:15px;max-width:90%;transform:translateX(120%);transition:transform .4s cubic-bezier(.25,.8,.25,1);box-shadow:0 8px 25px rgba(0,0,0,.15)}
+        .toast-msg.show-toast{display:block;transform:translateX(0)}
+        [dir="rtl"] .toast-msg{right:auto;left:20px;transform:translateX(-120%)}
+        [dir="rtl"] .toast-msg.show-toast{transform:translateX(0)}
+        .toast-success{background:#2E7D32}
+        .toast-error{background:#C62828}
+        .toast-info{background:#1565C0}
+        #overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(62,39,35,.5);z-index:1500;display:none;opacity:0;transition:opacity .3s;backdrop-filter:blur(2px)}
+        #overlay.show-overlay{display:block;opacity:1}
+        .contact-phone{font-size:24px;font-weight:800;color:#3E2723;direction:ltr;display:inline-block;margin-top:15px;text-decoration:underline;transition:color .3s}
+        .contact-phone:hover{color:#5D4037}
+        .contact-whatsapp{display:inline-flex;align-items:center;gap:8px;margin-top:12px;font-size:16px;font-weight:700;color:#25D366;text-decoration:underline;transition:opacity .3s}
+        .contact-whatsapp:hover{opacity:.7}
+        #scrollTopBtn{position:fixed;bottom:30px;right:30px;width:50px;height:50px;background:#3E2723;color:#fff;border:0;border-radius:50%;font-size:20px;cursor:pointer;z-index:1000;display:none;justify-content:center;align-items:center;transition:all .3s;box-shadow:0 4px 15px rgba(62,39,35,.3);opacity:0}
+        [dir="rtl"] #scrollTopBtn{right:auto;left:30px}
+        #scrollTopBtn.visible{display:flex;opacity:1}
+        #scrollTopBtn:hover{background:#5D4037;transform:translateY(-3px)}
+        .site-footer{background:#3E2723;color:#fff;padding:50px 30px 25px;margin-top:60px}
+        .footer-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px}
+        .footer-brand .footer-logo{height:50px;width:auto;margin-bottom:15px;filter:brightness(0) invert(1);opacity:.9}
+        .footer-brand p{color:rgba(255,255,255,.6);font-size:14px;line-height:1.8;max-width:350px}
+        .footer-col h4{font-size:16px;font-weight:800;margin-bottom:20px;color:#fff;position:relative;padding-bottom:10px}
+        .footer-col h4::after{content:'';position:absolute;bottom:0;left:0;width:30px;height:2px;background:rgba(255,255,255,.4)}
+        [dir="rtl"] .footer-col h4::after{left:auto;right:0}
+        .footer-col a{display:block;color:rgba(255,255,255,.6);font-size:14px;margin-bottom:10px;transition:color .3s,padding-inline-start .3s}
+        .footer-col a:hover{color:#fff;padding-inline-start:5px}
+        .footer-socials{display:flex;gap:12px;margin-top:15px}
+        .footer-social-btn{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .3s;cursor:pointer}
+        .footer-social-btn:hover{background:rgba(255,255,255,.2);transform:translateY(-2px)}
+        .footer-bottom{max-width:1200px;margin:30px auto 0;padding-top:20px;border-top:1px solid rgba(255,255,255,.1);text-align:center;color:rgba(255,255,255,.4);font-size:13px}
+
+        /* ===== TABLET ===== */
+        @media(max-width:1024px){
+            .search-box input{width:180px}
+            .search-box input:focus{width:220px}
+            .pp-container{gap:30px}
+            .pp-slider{height:450px}
+            .pp-images{max-width:480px}
+        }
+
+        /* ===== MOBILE ===== */
+        @media(max-width:768px){
+            .navbar{
+                padding:12px 16px;
+                flex-wrap:wrap;
+                gap:0;
+            }
+            .nav-section-left{
+                gap:10px;
+            }
+            .mobile-menu-btn{
+                display:block;
+            }
+            .mobile-search-toggle{
+                display:block;
+            }
+            .nav-section-center{
+                order:0;
+                flex:0;
+                justify-content:flex-start;
+            }
+            .search-box{
+                display:none;
+            }
+            .mobile-search-bar.open{
+                display:block;
+            }
+            .nav-links{
+                display:none;
+            }
+            .nav-links.mobile-open{
+                display:flex;
+                width:100%;
+                justify-content:space-around;
+                padding:14px 0;
+                border-top:1px solid #E8E0D5;
+                margin-top:10px;
+                order:10;
+            }
+            .nav-logo-img{
+                height:34px;
+            }
+            .lang-btn{
+                padding:8px 12px;
+                font-size:12px;
+            }
+            .nav-icons{
+                gap:12px;
+            }
+            .cart-icon,.wishlist-icon{
+                font-size:20px;
+            }
+            .shop-hero-logo{
+                padding:30px 16px 10px;
+            }
+            .shop-hero-logo img{
+                max-width:200px;
+            }
+            .filter-bar{
+                padding:0 16px;
+                margin-top:8px;
+            }
+            .products-grid{
+                padding:0 16px;
+                gap:14px;
+                grid-template-columns:repeat(2,1fr);
+            }
+            .product-img-wrap{
+                height:220px;
+                border-radius:16px 16px 0 0;
+            }
+            .product-card{
+                border-radius:16px;
+            }
+            .product-details{
+                padding:14px 12px 16px;
+            }
+            .product-name{
+                font-size:13px;
+                margin-bottom:6px;
+            }
+            .current-price{
+                font-size:15px;
+            }
+            .old-price{
+                font-size:12px;
+            }
+            .shipping-note{
+                font-size:10px;
+                margin-top:4px;
+            }
+            .discount-badge{
+                top:10px;left:10px;
+                padding:4px 10px;
+                font-size:10px;
+                border-radius:6px;
+            }
+            [dir="rtl"] .discount-badge{
+                left:auto;right:10px;
+            }
+            .stock-badge{
+                top:10px;right:10px;
+                padding:4px 10px;
+                font-size:10px;
+                border-radius:14px;
+            }
+            [dir="rtl"] .stock-badge{
+                right:auto;left:10px;
+            }
+            .card-bottom-actions{
+                opacity:1;
+                transform:translateY(0);
+                bottom:12px;
+                left:12px;
+                right:12px;
+                gap:8px;
+            }
+            .quick-add-btn{
+                font-size:11px;
+                padding:10px 12px;
+                border-radius:10px;
+            }
+            .wishlist-btn-card{
+                width:38px;
+                min-width:38px;
+                height:38px;
+                font-size:16px;
+                border-radius:10px;
+            }
+            .card-dots{
+                opacity:1;
+                bottom:10px;
+                padding:4px 10px;
+                gap:6px;
+            }
+            .card-dot{
+                width:6px;
+                height:6px;
+            }
+
+            /* Product Page Mobile */
+            .pp-container{
+                flex-direction:column;
+                padding:0 16px;
+                gap:20px;
+            }
+            .pp-slider{
+                height:320px;
+            }
+            .pp-images{
+                max-width:100%;
+            }
+            .pp-title{
+                font-size:20px;
+            }
+            .pp-current-price{
+                font-size:22px;
+            }
+            .pp-old-price{
+                font-size:14px;
+            }
+            .s-btn{
+                padding:12px 18px;
+                font-size:14px;
+            }
+            .btn-atc,.btn-buy{
+                padding:16px;
+                font-size:16px;
+            }
+            .rec-grid{
+                grid-template-columns:repeat(2,1fr);
+                gap:12px;
+            }
+            .rec-card img{
+                height:160px;
+            }
+            .rec-name{
+                font-size:13px;
+            }
+
+            /* Sidebar Mobile */
+            .sidebar{
+                width:100%;
+            }
+
+            /* Modal Mobile */
+            .modal-base{
+                width:95%;
+                padding:20px;
+                margin:10px;
+            }
+            .pay-options{
+                flex-direction:column;
+            }
+
+            /* Footer Mobile */
+            .footer-inner{
+                grid-template-columns:1fr;
+                gap:25px;
+                text-align:center;
+            }
+            .footer-brand p{
+                max-width:100%;
+            }
+            .footer-col h4::after{
+                left:50%;
+                right:auto;
+                transform:translateX(-50%);
+            }
+            .footer-socials{
+                justify-content:center;
+            }
+            .footer-col a{
+                text-align:center;
+            }
+
+            /* Misc Mobile */
+            #scrollTopBtn{
+                bottom:20px;
+                right:20px;
+                width:44px;
+                height:44px;
+                font-size:18px;
+            }
+            [dir="rtl"] #scrollTopBtn{
+                right:auto;left:20px;
+            }
+            .contact-phone{
+                font-size:20px;
+            }
+            .announcement-bar{
+                padding:8px 35px;
+                font-size:12px;
+            }
+        }
+
+        /* ===== SMALL MOBILE ===== */
+        @media(max-width:380px){
+            .products-grid{
+                padding:0 10px;
+                gap:10px;
+            }
+            .product-img-wrap{
+                height:190px;
+            }
+            .product-name{
+                font-size:12px;
+            }
+            .current-price{
+                font-size:14px;
+            }
+            .quick-add-btn{
+                font-size:10px;
+                padding:8px 10px;
+            }
+            .lang-btn{
+                padding:7px 10px;
+                font-size:11px;
+            }
+            .nav-logo-img{
+                height:30px;
+            }
+            .pp-slider{
+                height:280px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loader-screen" id="loaderScreen">
+        <img class="loader-logo" src="https://z-cdn-media.chatglm.cn/files/cda74804-a859-495b-976f-774d7b646be9.png?auth_key=1883551166-aadfba8bfec34231ac90420ce44886f5-0-812fe79686f0c6c548509fef34029787" alt="إِلَافَ">
+        <div class="loader-bar"><div class="loader-bar-inner"></div></div>
+    </div>
+    <div id="store-view" style="opacity:0;transition:opacity .5s">
+        <div class="announcement-bar hidden-bar" id="announcement-bar"><span id="announcement-text"></span><button class="close-announce" onclick="closeAnnouncement()">&times;</button></div>
+        <nav class="navbar" id="navbar">
+            <div class="nav-section-left">
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+                <img class="nav-logo-img" src="https://z-cdn-media.chatglm.cn/files/cda74804-a859-495b-976f-774d7b646be9.png?auth_key=1883551166-aadfba8bfec34231ac90420ce44886f5-0-812fe79686f0c6c548509fef34029787" alt="إِلَافَ" onclick="showShop()">
+            </div>
+            <div class="nav-section-center">
+                <div class="nav-links" id="navLinks">
+                    <a href="#" onclick="showShop();return false" data-i18n="home">HOME</a>
+                    <a href="#" onclick="showShop();return false" data-i18n="shop">SHOP</a>
+                    <a href="#" onclick="openContact();return false" data-i18n="contact">CONTACT</a>
+                </div>
+                <div class="search-box"><span class="search-icon">🔍</span><input type="text" id="searchInput" oninput="search()" data-i18n-ph="search" placeholder="Search here..."></div>
+                <div class="mobile-search-bar" id="mobileSearchBar"><span class="search-icon">🔍</span><input type="text" id="mobileSearchInput" oninput="mobileSearch()" data-i18n-ph="search" placeholder="Search here..."></div>
+            </div>
+            <div class="nav-section-right">
+                <button class="mobile-search-toggle" onclick="toggleMobileSearch()">🔍</button>
+                <button class="lang-btn" id="lang-btn" onclick="switchLang()">العربية</button>
+                <div class="nav-icons">
+                    <div class="wishlist-icon" onclick="openWishlist()" title="Wishlist">♡<div id="wishlist-count" class="wishlist-count" style="display:none">0</div></div>
+                    <div class="cart-icon" onclick="openCart()">🛒<div id="cart-count" class="cart-count">0</div></div>
+                </div>
+            </div>
+        </nav>
+        <div id="shop-view">
+            <div id="comingSoonWrap" class="coming-soon-wrap">
+                <img class="coming-soon-logo" src="https://z-cdn-media.chatglm.cn/files/cda74804-a859-495b-976f-774d7b646be9.png?auth_key=1883551166-aadfba8bfec34231ac90420ce44886f5-0-812fe79686f0c6c548509fef34029787" alt="إِلَافَ">
+                <div class="coming-soon-line"></div>
+                <h1 class="coming-soon-h">Coming Soon</h1>
+                <p class="coming-soon-sub" data-i18n="comingSub">Our new collection is on the way</p>
+                <div class="coming-soon-deco"><span></span> ✦ <span></span></div>
+            </div>
+            <div id="shopHeroLogo" class="shop-hero-logo">
+                <img src="https://z-cdn-media.chatglm.cn/files/cda74804-a859-495b-976f-774d7b646be9.png?auth_key=1883551166-aadfba8bfec34231ac90420ce44886f5-0-812fe79686f0c6c548509fef34029787" alt="إِلَافَ">
+                <div class="shop-hero-line"></div>
+            </div>
+            <div class="filter-bar" id="filterBar">
+                <div class="products-count" id="productsCount"></div>
+                <select id="sortSelect" onchange="applySort()">
+                    <option value="default" data-i18n="sortDefault">Default</option>
+                    <option value="price-asc" data-i18n="sortPriceAsc">Price: Low to High</option>
+                    <option value="price-desc" data-i18n="sortPriceDesc">Price: High to Low</option>
+                    <option value="name" data-i18n="sortName">Name A-Z</option>
+                </select>
+            </div>
+            <div id="products" class="products-grid"></div>
+            <div id="emptyState" class="empty-state" style="display:none"><div class="empty-state-icon">🛍️</div><h2 data-i18n="noProducts">No products available yet</h2><p data-i18n="noProductsSub">Products will appear here once added from the admin panel</p></div>
+        </div>
+        <div id="product-page">
+            <div style="max-width:1200px;margin:0 auto;padding:0 30px"><div class="back-link" onclick="showShop()" data-i18n="back">← Back to Shop</div></div>
+            <div class="pp-container">
+                <div class="pp-images"><div class="pp-slider" id="pp-slider"></div><div class="slider-dots" id="slider-dots"></div></div>
+                <div class="pp-info">
+                    <div id="pp-stock-badge" class="pp-stock-badge"></div>
+                    <h1 class="pp-title" id="pp-name"></h1>
+                    <div class="pp-price-box"><span class="pp-current-price" id="pp-price"></span><span class="pp-old-price" id="pp-old-price" style="display:none"></span></div>
+                    <div class="pp-shipping" id="pp-shipping"></div>
+                    <span class="option-label" data-i18n="color">COLOR</span><div class="color-options" id="pp-colors"></div>
+                    <span class="option-label" data-i18n="size">SIZE</span><div class="size-options" id="pp-sizes"></div>
+                    <div class="action-buttons">
+                        <button class="btn-atc" id="btnATC" onclick="addToCartPage()" data-i18n="addCart">ADD TO CART</button>
+                        <button class="btn-buy" id="btnBuy" onclick="buyNowPage()" data-i18n="buyNow">BUY IT NOW</button>
+                    </div>
+                    <div class="size-chart-toggle" onclick="toggleChart()" data-i18n="sizeChart">SIZE CHART ▼</div>
+                    <div class="size-chart-box" id="sizeChart"></div>
+                </div>
+            </div>
+            <div class="recommended"><div class="rec-title" data-i18n="youMayLike">YOU MAY ALSO LIKE</div><div class="rec-grid" id="rec-grid"></div></div>
+        </div>
+        <div id="sidebar" class="sidebar">
+            <div class="sidebar-header"><span data-i18n="cartTitle">Shopping Cart</span><button class="close-btn" onclick="closeCart()">&times;</button></div>
+            <div id="cart-items" class="cart-items"></div>
+            <div class="sidebar-footer"><div class="cart-total-details" id="cartTotalDetails"></div><button class="checkout-btn" id="checkoutBtn" onclick="openCheckout()" data-i18n="checkout">CHECKOUT</button></div>
+        </div>
+        <div id="wishlist-sidebar" class="sidebar">
+            <div class="sidebar-header"><span data-i18n="wishlistTitle">Wishlist</span><button class="close-btn" onclick="closeWishlist()">&times;</button></div>
+            <div id="wishlist-items" class="cart-items"></div>
+        </div>
+        <div id="overlay" onclick="closeAllModals()"></div>
+        <div id="checkout-modal" class="modal-base">
+            <h3 style="margin-bottom:25px;font-size:22px;color:#3E2723" data-i18n="checkoutTitle">Complete Your Order</h3>
+            <div class="form-group"><label data-i18n="payMethod">Payment Method</label><div class="pay-options"><label class="pay-option"><input type="radio" name="payMethod" value="Cash" checked><div class="pay-box">💵 <span data-i18n="cash">Cash on Delivery</span></div></label><label class="pay-option"><input type="radio" name="payMethod" value="InstaPay"><div class="pay-box">📱 InstaPay</div></label></div></div>
+            <div class="form-group" id="fg-name"><label data-i18n="name">Full Name</label><input type="text" id="c_name" data-i18n-ph="namePh" placeholder="Ahmed Mohamed"><div class="field-error" data-i18n="fillRequired">This field is required</div></div>
+            <div class="form-group" id="fg-phone"><label data-i18n="phone">Phone Number</label><input type="text" id="c_phone" data-i18n-ph="phonePh" placeholder="01000000000" oninput="this.value=this.value.replace(/[^0-9+]/g,'')"><div class="field-error" data-i18n="validPhone">Please enter a valid phone number</div></div>
+            <div class="form-group" id="fg-address"><label data-i18n="address">Detailed Address</label><input type="text" id="c_address" data-i18n-ph="addressPh" placeholder="Governorate - Area - Street"><div class="field-error" data-i18n="fillRequired">This field is required</div></div>
+            <div class="form-group"><label data-i18n="notes">Notes (Optional)</label><textarea id="c_notes" rows="2" data-i18n-ph="notesPh" placeholder="Any special requests..."></textarea></div>
+            <button class="checkout-btn" id="submitOrderBtn" onclick="submitOrder()" data-i18n="confirm">Confirm Order</button>
+        </div>
+        <div id="contact-modal" class="modal-base" style="text-align:center">
+            <h3 style="margin-bottom:15px;color:#3E2723;font-size:24px" data-i18n="contactTitle">Get In Touch</h3>
+            <p style="color:#555;margin-bottom:5px;font-size:16px;line-height:1.8" data-i18n="contactAr">تواصل معنا عن طريق ذلك الرقم فرأيك يهمنا</p>
+            <p style="color:#888;margin-bottom:15px;font-size:14px;font-style:italic" data-i18n="contactEn">Contact us through this phone number.</p>
+            <a href="tel:+201007794219" class="contact-phone">+20 100 779 4219</a><br>
+            <a href="https://wa.me/201007794219" target="_blank" class="contact-whatsapp">💬 WhatsApp</a><br><br>
+            <button class="checkout-btn" onclick="closeContact()" style="background:0 0;color:#3E2723;border:2px solid #3E2723" data-i18n="close">Close</button>
+        </div>
+        <div id="success-msg" class="toast-msg toast-success"></div>
+        <div id="error-msg" class="toast-msg toast-error"></div>
+        <div id="info-msg" class="toast-msg toast-info"></div>
+        <button id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+        <footer class="site-footer">
+            <div class="footer-inner">
+                <div class="footer-brand"><img class="footer-logo" src="https://z-cdn-media.chatglm.cn/files/cda74804-a859-495b-976f-774d7b646be9.png?auth_key=1883551166-aadfba8bfec34231ac90420ce44886f5-0-812fe79686f0c6c548509fef34029787" alt="إِلَافَ"><p data-i18n="footerDesc">متجرك المفضل للأزياء العصرية والأنيقة.</p><div class="footer-socials"><a href="https://wa.me/201007794219" target="_blank" class="footer-social-btn" title="WhatsApp">💬</a><a href="tel:+201007794219" class="footer-social-btn" title="Phone">📞</a><a href="mailto:elafwear26@gmail.com" class="footer-social-btn" title="Email">✉️</a></div></div>
+                <div class="footer-col"><h4 data-i18n="quickLinks">روابط سريعة</h4><a href="#" onclick="showShop();return false" data-i18n="home">الرئيسية</a><a href="#" onclick="showShop();return false" data-i18n="shop">المتجر</a><a href="#" onclick="openContact();return false" data-i18n="contact">اتصل بنا</a></div>
+                <div class="footer-col"><h4 data-i18n="contactInfo">تواصل معنا</h4><a href="tel:+201007794219" style="direction:ltr;text-align:start">+20 100 779 4219</a><a href="https://wa.me/201007794219" target="_blank" style="direction:ltr;text-align:start">WhatsApp</a><a href="mailto:elafwear26@gmail.com">elafwear26@gmail.com</a></div>
+            </div>
+            <div class="footer-bottom">© 2025 إِلَافَ Store. <span data-i18n="footerRights">جميع الحقوق محفوظة</span></div>
+        </footer>
+    </div>
+<script>
+(function(){
+'use strict';
+var L='en',CSI={},CSII={},S={},db=[],cart=[],wishlist=[],CP=null,SC='',SS='',SI=null,CS=0,currentDisplay=[];
+var FI='https://ui-avatars.com/api/?name=ILAF&size=600&background=5D4037&color=FAF8F5&bold=true';
+var T={en:{home:'HOME',shop:'SHOP',contact:'CONTACT',search:'Search here...',back:'← Back to Shop',color:'COLOR',size:'SIZE',addCart:'ADD TO CART',buyNow:'BUY IT NOW',sizeChart:'SIZE CHART ▼',chartContent:'<strong>S:</strong> Chest 90cm | Length 68cm<br><strong>M:</strong> Chest 95cm | Length 70cm<br><strong>L:</strong> Chest 100cm | Length 72cm<br><strong>XL:</strong> Chest 105cm | Length 74cm',youMayLike:'YOU MAY ALSO LIKE',cartTitle:'Shopping Cart',emptyCart:'Your cart is empty',subtotal:'Subtotal',shipping:'Shipping',total:'Total',checkout:'CHECKOUT',checkoutTitle:'Complete Your Order',payMethod:'Payment Method',cash:'Cash on Delivery',name:'Full Name',phone:'Phone Number',address:'Detailed Address',notes:'Notes (Optional)',namePh:'Ahmed Mohamed',phonePh:'01000000000',addressPh:'Governorate - Area - Street',notesPh:'Any special requests...',confirm:'Confirm Order',success:'Added to cart ✓',orderSuccess:'Order confirmed! We will contact you at ',remove:'Remove',currency:' EGP',contactTitle:'Get In Touch',contactAr:'تواصل معنا عن طريق ذلك الرقم فرأيك يهمنا',contactEn:'Contact us through this phone number.',close:'Close',inStock:'IN STOCK',outOfStock:'OUT OF STOCK',noStock:'This variation is out of stock',comingSub:'Our new collection is on the way',shippingNote:'+ Shipping',fillRequired:'This field is required',validPhone:'Enter a valid phone number',noProducts:'No products available yet',noProductsSub:'Products will appear here once added from admin',quickAdd:'Quick Add',footerDesc:'Your favorite store for modern and elegant fashion.',quickLinks:'Quick Links',contactInfo:'Contact Us',footerRights:'All rights reserved',orderError:'Failed to send order, please try again',wishlistTitle:'Wishlist',emptyWishlist:'Your wishlist is empty',addedWishlist:'Added to wishlist ♥',removedWishlist:'Removed from wishlist',showCount:'Showing {n} products',sortDefault:'Default',sortPriceAsc:'Price: Low to High',sortPriceDesc:'Price: High to Low',sortName:'Name A-Z',sendingOrder:'Sending...'},
+ar:{home:'الرئيسية',shop:'المتجر',contact:'اتصل بنا',search:'ابحث هنا...',back:'→ العودة للمتجر',color:'اللون',size:'المقاس',addCart:'أضف للسلة',buyNow:'اشتري الآن',sizeChart:'جدول المقاسات ▼',chartContent:'<strong>S:</strong> الصدر 90 سم | الطول 68 سم<br><strong>M:</strong> الصدر 95 سم | الطول 70 سم<br><strong>L:</strong> الصدر 100 سم | الطول 72 سم<br><strong>XL:</strong> الصدر 105 سم | الطول 74 سم',youMayLike:'قد يعجبك أيضاً',cartTitle:'سلة المشتريات',emptyCart:'السلة فارغة',subtotal:'المجموع الفرعي',shipping:'الشحن',total:'الإجمالي',checkout:'إتمام الشراء',checkoutTitle:'أكمل طلبك',payMethod:'طريقة الدفع',cash:'كاش عند الاستلام',name:'الاسم بالكامل',phone:'رقم الهاتف',address:'العنوان بالتفصيل',notes:'ملاحظات (اختياري)',namePh:'أحمد محمد',phonePh:'01000000000',addressPh:'المحافظة - المنطقة - الشارع',notesPh:'أي طلبات خاصة...',confirm:'تأكيد الطلب',success:'تمت الإضافة للسلة ✓',orderSuccess:'تم تأكيد طلبك! هنتواصل معاك على ',remove:'حذف',currency:' ج.م',contactTitle:'تواصل معنا',contactAr:'تواصل معنا عن طريق ذلك الرقم فرأيك يهمنا',contactEn:'Contact us through this phone number.',close:'إغلاق',inStock:'متوفر',outOfStock:'نفذت الكمية',noStock:'هذا الموديل غير متوفر حالياً',comingSub:'مجموعتنا الجديدة في الطريق',shippingNote:'+ مصاريف الشحن',fillRequired:'هذا الحقل مطلوب',validPhone:'ادخل رقم هاتف صحيح',noProducts:'لا توجد منتجات حالياً',noProductsSub:'المنتجات ستظهر هنا من لوحة التحكم',quickAdd:'إضافة سريعة',footerDesc:'متجرك المفضل للأزياء العصرية والأنيقة.',quickLinks:'روابط سريعة',contactInfo:'تواصل معنا',footerRights:'جميع الحقوق محفوظة',orderError:'حصل مشكلة، حاول تاني',wishlistTitle:'المفضلة',emptyWishlist:'المفضلة فارغة',addedWishlist:'تمت الإضافة للمفضلة ♥',removedWishlist:'تمت الإزالة من المفضلة',showCount:'عرض {n} منتج',sortDefault:'الافتراضي',sortPriceAsc:'السعر: الأقل أولاً',sortPriceDesc:'السعر: الأعلى أولاً',sortName:'الاسم أ-ي',sendingOrder:'جاري الإرسال...'}};
+function t(k){return T[L][k]||k}
+function $(i){return document.getElementById(i)}
+function ea(s){return s.replace(/'/g,"\\'").replace(/"/g,'&quot;')}
+function ls(){try{var s=JSON.parse(localStorage.getItem('site_settings'));return{shipping:(s&&s.shipping)?s.shipping:50,freeShippingMin:(s&&s.freeShippingMin)?s.freeShippingMin:0,announcement:(s&&s.announcement)?s.announcement:'',telegramToken:(s&&s.telegramToken)?s.telegramToken:'',telegramChatId:(s&&s.telegramChatId)?s.telegramChatId:''}}catch(e){return{shipping:50,freeShippingMin:0,announcement:'',telegramToken:'',telegramChatId:''}}}
+function gi(p){return(p.images&&p.images.length>0)?p.images:[p.img||FI]}
+function vs(pid,c,s){var p=db.find(function(x){return x.id===pid});if(!p||!p.inventory)return 0;var v=p.inventory.find(function(x){return x.c===c&&x.s===s});return v?v.q:0}
+function ts(p){var tot=0;if(p.inventory)for(var j=0;j<p.inventory.length;j++)tot+=p.inventory[j].q;return tot}
+function isWished(pid){return wishlist.indexOf(pid)!==-1}
+function saveWishlist(){try{localStorage.setItem('site_wishlist',JSON.stringify(wishlist))}catch(e){}}
+function sE(m){var e=$('error-msg');e.innerText=m;e.classList.add('show-toast');clearTimeout(e._t);e._t=setTimeout(function(){e.classList.remove('show-toast')},3000)}
+function sS(m){var e=$('success-msg');e.innerText=m;e.classList.add('show-toast');clearTimeout(e._t);e._t=setTimeout(function(){e.classList.remove('show-toast')},2500);var c=$('cart-count');c.classList.remove('bump');void c.offsetWidth;c.classList.add('bump')}
+function sI(m){var e=$('info-msg');e.innerText=m;e.classList.add('show-toast');clearTimeout(e._t);e._t=setTimeout(function(){e.classList.remove('show-toast')},2500)}
+function init(){S=ls();try{db=JSON.parse(localStorage.getItem('site_products'))||[]}catch(e){db=[]}try{cart=JSON.parse(localStorage.getItem('site_cart'))||[]}catch(e){cart=[]}try{wishlist=JSON.parse(localStorage.getItem('site_wishlist'))||[]}catch(e){wishlist=[]}if(S.announcement&&S.announcement.trim()){$('announcement-text').innerText=S.announcement;$('announcement-bar').classList.remove('hidden-bar')}showShop();uCart();uWishlist();aT();sSL();setTimeout(function(){$('loaderScreen').classList.add('hide');$('store-view').style.opacity='1'},1500)}
+function sSL(){var n=$('navbar'),b=$('scrollTopBtn');window.addEventListener('scroll',function(){var y=window.pageYOffset||document.documentElement.scrollTop;if(y>10)n.classList.add('scrolled');else n.classList.remove('scrolled');if(y>400)b.classList.add('visible');else b.classList.remove('visible')},{passive:true})}
+window.closeAnnouncement=function(){$('announcement-bar').classList.add('hidden-bar')};
+window.toggleMobileMenu=function(){$('navLinks').classList.toggle('mobile-open')};
+window.toggleMobileSearch=function(){var bar=$('mobileSearchBar');bar.classList.toggle('open');if(bar.classList.contains('open')){$('mobileSearchInput').focus()}else{$('mobileSearchInput').value='';window.search()}};
+window.mobileSearch=function(){var q=$('mobileSearchInput').value.trim().toLowerCase();$('searchInput').value=q;currentDisplay=q?db.filter(function(p){return p.name.toLowerCase().indexOf(q)!==-1}):db.slice();applySort()};
+window.switchLang=function(){L=L==='en'?'ar':'en';document.documentElement.lang=L;document.documentElement.dir=L==='ar'?'rtl':'ltr';$('lang-btn').innerText=L==='en'?'العربية':'English';aT();uCart();uWishlist();if(CP)ccS();if($('products').style.display==='grid')draw(currentDisplay)};
+function aT(){document.querySelectorAll('[data-i18n]').forEach(function(el){var k=el.getAttribute('data-i18n');if(T[L][k])el.innerText=T[L][k]});document.querySelectorAll('[data-i18n-ph]').forEach(function(el){var k=el.getAttribute('data-i18n-ph');if(T[L][k])el.placeholder=T[L][k]});$('sizeChart').innerHTML=t('chartContent');document.querySelectorAll('#sortSelect option').forEach(function(opt){var k=opt.getAttribute('data-i18n');if(k&&T[L][k])opt.innerText=T[L][k]})}
+window.showShop=function(){$('navLinks').classList.remove('mobile-open');var msb=$('mobileSearchBar');if(msb)msb.classList.remove('open');$('shop-view').style.display='block';$('product-page').style.display='none';cPPI();if(db.length===0){$('comingSoonWrap').style.display='flex';$('shopHeroLogo').style.display='none';$('products').style.display='none';$('emptyState').style.display='none';$('filterBar').style.display='none'}else{$('comingSoonWrap').style.display='none';$('shopHeroLogo').style.display='flex';$('emptyState').style.display='none';$('products').style.display='grid';$('filterBar').style.display='flex';currentDisplay=db.slice();draw(currentDisplay);$('shopHeroLogo').classList.remove('animate-hero');void $('shopHeroLogo').offsetWidth;$('shopHeroLogo').classList.add('animate-hero')}window.scrollTo({top:0,behavior:'smooth'})};
+window.search=function(){var q=$('searchInput').value.trim().toLowerCase();var mi=$('mobileSearchInput');if(mi)mi.value=q;currentDisplay=q?db.filter(function(p){return p.name.toLowerCase().indexOf(q)!==-1}):db.slice();applySort()};
+window.applySort=function(){var sv=$('sortSelect').value,q=$('searchInput').value.trim().toLowerCase();var f=q?db.filter(function(p){return p.name.toLowerCase().indexOf(q)!==-1}):db.slice();if(sv==='price-asc')f.sort(function(a,b){return a.price-b.price});else if(sv==='price-desc')f.sort(function(a,b){return b.price-a.price});else if(sv==='name')f.sort(function(a,b){return a.name.localeCompare(b.name)});currentDisplay=f;if(!f.length){$('products').style.display='none';$('emptyState').style.display='block';$('filterBar').style.display='none'}else{$('emptyState').style.display='none';$('products').style.display='grid';$('filterBar').style.display='flex';draw(f)}};
+function cCSI(){Object.keys(CSI).forEach(function(k){clearInterval(CSI[k])});CSI={};CSII={}}
+function draw(arr){cCSI();var c=$('products');if(!arr.length){c.innerHTML='';return}$('productsCount').innerText=t('showCount').replace('{n}',arr.length);var h='';for(var i=0;i<arr.length;i++){var p=arr[i],imgs=gi(p),discHtml='',priceHtml='<span class="current-price">'+p.price+t('currency')+'</span>';if(p.old_price&&p.old_price>p.price){var d=Math.round(((p.old_price-p.price)/p.old_price)*100);discHtml='<div class="discount-badge">-'+d+'%</div>';priceHtml+='<span class="old-price">'+p.old_price+t('currency')+'</span>'}var st=ts(p),stockHtml=st>0?'<div class="stock-badge stock-in">'+t('inStock')+'</div>':'<div class="stock-badge stock-out">'+t('outOfStock')+'</div>';var fc=(p.colors&&p.colors.length>0)?p.colors[0]:'',fs=(p.sizes&&p.sizes.length>0)?p.sizes[0]:'';var w=isWished(p.id);h+='<div class="product-card" onclick="openProduct(\''+p.id+'\')" style="animation-delay:'+(i*.1)+'s"><div class="product-img-wrap"><div class="card-slider" id="slider-'+p.id+'">';for(var j=0;j<imgs.length;j++)h+='<div class="card-slide'+(j===0?' active-slide':'')+'"><img src="'+imgs[j]+'" alt="'+ea(p.name)+'" onerror="this.src=\''+FI+'\'"></div>';h+='</div>';if(imgs.length>1){h+='<div class="card-dots" id="dots-'+p.id+'">';for(var k=0;k<imgs.length;k++)h+='<button class="card-dot '+(k===0?'active':'')+'" onclick="event.stopPropagation();sC(\''+p.id+'\','+k+')"></button>';h+='</div>'}h+=discHtml+stockHtml;h+='<div class="card-bottom-actions">';if(st>0)h+='<button class="quick-add-btn" onclick="event.stopPropagation();qA(\''+p.id+'\',\''+ea(fc)+'\',\''+ea(fs)+'\')">'+t('quickAdd')+'</button>';h+='<button class="wishlist-btn-card '+(w?'active':'')+'" onclick="event.stopPropagation();toggleWishlist(\''+p.id+'\',this)">'+(w?'♥':'♡')+'</button>';h+='</div>';h+='</div><div class="product-details"><div class="product-name">'+p.name+'</div><div class="price-box">'+priceHtml+'</div><div class="shipping-note">'+t('shippingNote')+'</div></div></div>'}c.innerHTML=h;setTimeout(function(){document.querySelectorAll('.card-slider').forEach(function(sl){var slds=sl.querySelectorAll('.card-slide');if(slds.length>1){var id=sl.id.replace('slider-','');CSII[id]=0;CSI[id]=setInterval(function(){nS(id)},3500)}});document.querySelectorAll('.product-card').forEach(function(cd,i){setTimeout(function(){cd.classList.add('animate')},i*80)})},50)}
+function nS(id){if(!CSII[id]&&CSII[id]!==0)return;var sl=$('slider-'+id);var dots=$('dots-'+id);if(!sl||!dots)return;var slds=sl.querySelectorAll('.card-slide');var dts=dots.querySelectorAll('.card-dot');if(slds.length<=1)return;CSII[id]=(CSII[id]+1)%slds.length;slds.forEach(function(s){s.classList.remove('active-slide')});dts.forEach(function(d){d.classList.remove('active')});if(slds[CSII[id]])slds[CSII[id]].classList.add('active-slide');if(dts[CSII[id]])dts[CSII[id]].classList.add('active')}
+window.sC=function(id,idx){if(CSI[id])clearInterval(CSI[id]);CSII[id]=idx;var sl=$('slider-'+id);var dots=$('dots-'+id);if(!sl||!dots)return;var slds=sl.querySelectorAll('.card-slide');var dts=dots.querySelectorAll('.card-dot');slds.forEach(function(s){s.classList.remove('active-slide')});dts.forEach(function(d){d.classList.remove('active')});if(slds[idx])slds[idx].classList.add('active-slide');if(dts[idx])dts[idx].classList.add('active');CSI[id]=setInterval(function(){nS(id)},3500)};
+window.openProduct=function(id){var p=db.find(function(x){return x.id===id});if(!p)return;cPPI();CP=p;SC=(p.colors&&p.colors.length>0)?p.colors[0]:'';SS=(p.sizes&&p.sizes.length>0)?p.sizes[0]:'';SI=null;$('shop-view').style.display='none';$('product-page').style.display='block';ccS();window.scrollTo({top:0,behavior:'smooth'})};
+function ccS(){if(!CP)return;var imgs=gi(CP);var sl=$('pp-slider');var dots=$('slider-dots');sl.innerHTML='';dots.innerHTML='';for(var i=0;i<imgs.length;i++){var d=document.createElement('div');d.className='pp-slide'+(i===0?' active':'');d.innerHTML='<img src="'+imgs[i]+'" alt="'+ea(CP.name)+'" onerror="this.src=\''+FI+'\'">';sl.appendChild(d);var dot=document.createElement('button');dot.className='slider-dot'+(i===0?' active':'');dot.onclick=(function(idx){return function(){pPS(idx)}})(i);dots.appendChild(dot)}if(imgs.length>1){var prev=document.createElement('button');prev.className='pp-slider-nav pp-prev';prev.innerHTML='‹';prev.onclick=function(){var ci=Array.from(sl.querySelectorAll('.pp-slide')).findIndex(function(s){return s.classList.contains('active')});pPS((ci-1+imgs.length)%imgs.length)};sl.appendChild(prev);var next=document.createElement('button');next.className='pp-slider-nav pp-next';next.innerHTML='›';next.onclick=function(){var ci=Array.from(sl.querySelectorAll('.pp-slide')).findIndex(function(s){return s.classList.contains('active')});pPS((ci+1)%imgs.length)};sl.appendChild(next)}$('pp-name').innerText=CP.name;$('pp-price').innerText=CP.price+t('currency');if(CP.old_price&&CP.old_price>CP.price){$('pp-old-price').innerText=CP.old_price+t('currency');$('pp-old-price').style.display='inline'}else{$('pp-old-price').style.display='none'}$('pp-shipping').innerText=t('shippingNote');var st=ts(CP);var sb=$('pp-stock-badge');if(st>0){sb.innerText=t('inStock');sb.className='pp-stock-badge stock-in'}else{sb.innerText=t('outOfStock');sb.className='pp-stock-badge stock-out'}var co=$('pp-colors');co.innerHTML='';if(CP.colors&&CP.colors.length>0){CP.colors.forEach(function(c){var b=document.createElement('button');b.className='c-btn'+(c===SC?' active':'');b.style.background=c;b.onclick=function(){SC=c;co.querySelectorAll('.c-btn').forEach(function(x){x.classList.remove('active')});b.classList.add('active');cPPI()};co.appendChild(b)})}var so=$('pp-sizes');so.innerHTML='';if(CP.sizes&&CP.sizes.length>0){CP.sizes.forEach(function(s){var b=document.createElement('button');b.className='s-btn'+(s===SS?' active':'');b.innerText=s;b.onclick=function(){SS=s;so.querySelectorAll('.s-btn').forEach(function(x){x.classList.remove('active')});b.classList.add('active');cPPI()};so.appendChild(b)})}var rId=CP.id;if(!db.find(function(x){return x.id!==rId})){$('rec-grid').parentElement.style.display='none';return}$('rec-grid').parentElement.style.display='block';var recs=db.filter(function(x){return x.id!==rId}).sort(function(){return Math.random()-.5}).slice(0,4);var rh='';recs.forEach(function(r){var ri=gi(r)[0];rh+='<div class="rec-card" onclick="openProduct(\''+r.id+'\')"><img src="'+ri+'" alt="'+ea(r.name)+'" onerror="this.src=\''+FI+'\'"><div class="rec-name">'+r.name+'</div><div class="rec-price">'+r.price+t('currency')+'</div></div>'});$('rec-grid').innerHTML=rh}
+function pPS(idx){var sl=$('pp-slider');var dots=$('slider-dots');sl.querySelectorAll('.pp-slide').forEach(function(s,i){s.classList.toggle('active',i===idx)});dots.querySelectorAll('.slider-dot').forEach(function(d,i){d.classList.toggle('active',i===idx)})}
+function cPPI(){if(SI){clearInterval(SI);SI=null}}
+window.toggleChart=function(){var ch=$('sizeChart');ch.style.display=ch.style.display==='block'?'none':'block'};
+window.qA=function(pid,c,s){var p=db.find(function(x){return x.id===pid});if(!p)return;var stk=vs(pid,c,s);if(stk<=0){sE(t('noStock'));return}var ex=cart.find(function(x){return x.id===pid&&x.c===c&&x.s===s});if(ex){if(ex.q<stk)ex.q++;else{sE(t('noStock'));return}}else{cart.push({id:pid,c:c,s:s,q:1})}saveCart();uCart();sS(t('success'))};
+window.addToCartPage=function(){if(!CP||!SC||!SS)return;var stk=vs(CP.id,SC,SS);if(stk<=0){sE(t('noStock'));return}var btn=$('btnATC');btn.disabled=true;btn.innerHTML='<span class="btn-spinner"></span>'+t('sendingOrder');setTimeout(function(){var ex=cart.find(function(x){return x.id===CP.id&&x.c===SC&&x.s===SS});if(ex){if(ex.q<stk)ex.q++;else{sE(t('noStock'));btn.disabled=false;btn.innerText=t('addCart');return}}else{cart.push({id:CP.id,c:SC,s:SS,q:1})}saveCart();uCart();sS(t('success'));btn.disabled=false;btn.innerText=t('addCart')},500)};
+window.buyNowPage=function(){if(!CP||!SC||!SS)return;var stk=vs(CP.id,SC,SS);if(stk<=0){sE(t('noStock'));return}var btn=$('btnBuy');btn.disabled=true;btn.innerHTML='<span class="btn-spinner"></span>'+t('sendingOrder');setTimeout(function(){var ex=cart.find(function(x){return x.id===CP.id&&x.c===SC&&x.s===SS});if(ex){if(ex.q<stk)ex.q++;else{sE(t('noStock'));btn.disabled=false;btn.innerText=t('buyNow');return}}else{cart.push({id:CP.id,c:SC,s:SS,q:1})}saveCart();uCart();btn.disabled=false;btn.innerText=t('buyNow');openCart()},500)};
+window.toggleWishlist=function(pid,btn){var idx=wishlist.indexOf(pid);if(idx===-1){wishlist.push(pid);if(btn){btn.classList.add('active');btn.innerHTML='♥'}sS(t('addedWishlist'))}else{wishlist.splice(idx,1);if(btn){btn.classList.remove('active');btn.innerHTML='♡'}sI(t('removedWishlist'))}saveWishlist();uWishlist()};
+function saveCart(){try{localStorage.setItem('site_cart',JSON.stringify(cart))}catch(e){}}
+function uCart(){var cnt=0;cart.forEach(function(x){cnt+=x.q});$('cart-count').innerText=cnt;$('cart-count').style.display=cnt>0?'flex':'none';var ci=$('cart-items');if(cart.length===0){ci.innerHTML='<div style="text-align:center;padding:60px 20px;color:#888;font-size:15px">'+t('emptyCart')+'</div>';$('checkoutBtn').disabled=true}else{$('checkoutBtn').disabled=false;var h='';cart.forEach(function(item,idx){var p=db.find(function(x){return x.id===item.id});if(!p)return;var img=gi(p)[0];var total=item.q*p.price;h+='<div class="cart-item" id="ci-'+idx+'"><img src="'+img+'" alt="'+ea(p.name)+'" onerror="this.src=\''+FI+'\'"><div class="cart-item-details"><h4>'+p.name+'</h4><div class="cart-item-meta"><span>'+item.c+'</span><span>|</span><span>'+item.s+'</span></div><div class="cart-item-price">'+total+t('currency')+'</div><div class="qty-controls"><button class="qty-btn" onclick="uQ('+idx+',-1)">−</button><span class="qty-val">'+item.q+'</span><button class="qty-btn" onclick="uQ('+idx+',1)">+</button></div></div><button class="remove-btn" onclick="rCI('+idx+')">'+t('remove')+'</button></div>'});ci.innerHTML=h}var sub=0;cart.forEach(function(item){var p=db.find(function(x){return x.id===item.id});if(p)sub+=item.q*p.price});var sh=S.shipping||50;var freeMin=S.freeShippingMin||0;if(freeMin>0&&sub>=freeMin)sh=0;var tot=sub+sh;var td=$('cartTotalDetails');td.innerHTML='<div class="cart-total-row"><span>'+t('subtotal')+'</span><span>'+sub+t('currency')+'</span></div><div class="cart-total-row"><span>'+t('shipping')+'</span><span>'+(sh===0?'Free':sh+t('currency'))+'</span></div><div class="cart-total-final"><span>'+t('total')+'</span><span>'+tot+t('currency')+'</span></div>'}
+window.uQ=function(idx,d){if(!cart[idx])return;var p=db.find(function(x){return x.id===cart[idx].id});var nq=cart[idx].q+d;if(nq<=0){rCI(idx);return}if(p){var stk=vs(cart[idx].id,cart[idx].c,cart[idx].s);if(nq>stk){sE(t('noStock'));return}}cart[idx].q=nq;saveCart();uCart()};
+window.rCI=function(idx){var el=$('ci-'+idx);if(el){el.classList.add('removing-item');setTimeout(function(){cart.splice(idx,1);saveCart();uCart()},300)}else{cart.splice(idx,1);saveCart();uCart()}};
+window.openCart=function(){$('sidebar').classList.add('open');$('overlay').style.display='block';setTimeout(function(){$('overlay').classList.add('show-overlay')},10)};
+window.closeCart=function(){$('sidebar').classList.remove('open');$('overlay').classList.remove('show-overlay');setTimeout(function(){$('overlay').style.display='none'},300)};
+window.openWishlist=function(){uWishlistItems();$('wishlist-sidebar').classList.add('open');$('overlay').style.display='block';setTimeout(function(){$('overlay').classList.add('show-overlay')},10)};
+window.closeWishlist=function(){$('wishlist-sidebar').classList.remove('open');$('overlay').classList.remove('show-overlay');setTimeout(function(){$('overlay').style.display='none'},300)};
+function uWishlist(){var cnt=wishlist.length;$('wishlist-count').innerText=cnt;$('wishlist-count').style.display=cnt>0?'flex':'none'}
+function uWishlistItems(){var ci=$('wishlist-items');if(wishlist.length===0){ci.innerHTML='<div style="text-align:center;padding:60px 20px;color:#888;font-size:15px">'+t('emptyWishlist')+'</div>';return}var h='';wishlist.forEach(function(pid){var p=db.find(function(x){return x.id===pid});if(!p)return;var img=gi(p)[0];h+='<div class="cart-item" style="cursor:pointer" onclick="closeWishlist();openProduct(\''+p.id+'\')"><img src="'+img+'" alt="'+ea(p.name)+'" onerror="this.src=\''+FI+'\'"><div class="cart-item-details"><h4>'+p.name+'</h4><div class="cart-item-price">'+p.price+t('currency')+'</div></div><button class="remove-btn" onclick="event.stopPropagation();toggleWishlist(\''+p.id+'\');uWishlistItems()">'+t('remove')+'</button></div>'});ci.innerHTML=h}
+window.openCheckout=function(){if(cart.length===0)return;closeCart();clearFormErrors();$('c_name').value='';$('c_phone').value='';$('c_address').value='';$('c_notes').value='';document.querySelectorAll('input[name="payMethod"]')[0].checked=true;var m=$('checkout-modal');m.style.display='block';$('overlay').style.display='block';setTimeout(function(){m.classList.add('show');$('overlay').classList.add('show-overlay')},10)};
+window.closeCheckout=function(){var m=$('checkout-modal');m.classList.remove('show');$('overlay').classList.remove('show-overlay');setTimeout(function(){m.style.display='none';$('overlay').style.display='none'},300)};
+window.openContact=function(){var m=$('contact-modal');m.style.display='block';$('overlay').style.display='block';setTimeout(function(){m.classList.add('show');$('overlay').classList.add('show-overlay')},10)};
+window.closeContact=function(){var m=$('contact-modal');m.classList.remove('show');$('overlay').classList.remove('show-overlay');setTimeout(function(){m.style.display='none';$('overlay').style.display='none'},300)};
+window.closeAllModals=function(){closeCart();closeWishlist();closeCheckout();closeContact()};
+function clearFormErrors(){['fg-name','fg-phone','fg-address'].forEach(function(id){$(id).classList.remove('has-error')})}
+window.submitOrder=function(){clearFormErrors();var ok=true;var name=$('c_name').value.trim();var phone=$('c_phone').value.trim();var address=$('c_address').value.trim();var notes=$('c_notes').value.trim();var pay=document.querySelector('input[name="payMethod"]:checked');var payVal=pay?pay.value:'Cash';if(!name){$('fg-name').classList.add('has-error');ok=false}if(!phone||phone.length<10){$('fg-phone').classList.add('has-error');ok=false}if(!address){$('fg-address').classList.add('has-error');ok=false}if(!ok)return;var btn=$('submitOrderBtn');btn.disabled=true;btn.innerHTML='<span class="btn-spinner"></span>'+t('sendingOrder');var items=cart.map(function(item){var p=db.find(function(x){return x.id===item.id});return(p?p.name:'?')+' ('+item.c+'/'+item.s+') x'+item.q}).join('\n');var sub=0;cart.forEach(function(item){var p=db.find(function(x){return x.id===item.id});if(p)sub+=item.q*p.price});var sh=S.shipping||50;var freeMin=S.freeShippingMin||0;if(freeMin>0&&sub>=freeMin)sh=0;var tot=sub+sh;var msg='🛒 *طلب جديد*\n\n👤 '+name+'\n📱 '+phone+'\n📍 '+address+'\n\n'+items+'\n\n💰 '+t('subtotal')+': '+sub+t('currency')+'\n🚚 '+t('shipping')+': '+(sh===0?'Free':sh+t('currency'))+'\n💵 '+t('total')+': '+tot+t('currency')+'\n💳 '+payVal+(notes?'\n📝 '+notes:'');if(S.telegramToken&&S.telegramChatId){var url='https://api.telegram.org/bot'+S.telegramToken+'/sendMessage';fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:S.telegramChatId,text:msg,parse_mode:'Markdown'})}).then(function(r){if(r.ok){done()}else{fail()}}).catch(function(){fail()})}else{done()}
+function done(){cart=[];saveCart();uCart();closeCheckout();btn.disabled=false;btn.innerText=t('confirm');sS(t('orderSuccess')+phone)}
+function fail(){btn.disabled=false;btn.innerText=t('confirm');sE(t('orderError'))}};
+document.addEventListener('DOMContentLoaded',init);
+})();
+</script>
+</body>
+</html>
